@@ -1,0 +1,1 @@
+export default function Dashboard() { return <h2>📊 Panel Główny (Statystyki WMS)</h2>; }

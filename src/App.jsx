@@ -1,11 +1,22 @@
 import React from 'react';
-import BrandList from './BrandList';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import Dashboard from './pages/Dashboard';
+import Products from './pages/Products';
+import Reports from './pages/Reports';
 
 function App() {
   return (
-    <div>
-      <BrandList />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        {/* Główny układ (Layout) owija wszystkie podstrony */}
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="products" element={<Products />} />
+          <Route path="reports" element={<Reports />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 

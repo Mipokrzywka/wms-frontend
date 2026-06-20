@@ -1,0 +1,1 @@
+export default function Products() { return <h2>📦 Zarządzanie Produktami i Stanem</h2>; }

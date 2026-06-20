@@ -5,7 +5,6 @@ const BrandList = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Zapytanie do Twojego API – dzięki proxy w Vite wystarczy wpisać samą ścieżkę
     fetch('/api/brands')
       .then(response => {
         if (!response.ok) {
@@ -19,10 +18,10 @@ const BrandList = () => {
 
   return (
     <div style={{ padding: '25px', fontFamily: 'Arial, sans-serif' }}>
-      <h2>🧪 Test połączenia: React ↔ ASP.NET Core</h2>
+      <h2>Test połączenia: React ↔ ASP.NET Core</h2>
       <hr />
       
-      {error && <p style={{ color: 'red' }}>⚠️ Coś poszło nie tak: {error}</p>}
+      {error && <p style={{ color: 'red' }}>Coś poszło nie tak: {error}</p>}
       
       {!error && brands.length === 0 && <p>Ładowanie marek z bazy danych...</p>}
 
