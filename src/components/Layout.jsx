@@ -2,10 +2,35 @@ import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Package, FileText, LayoutDashboard, Menu, X } from 'lucide-react';
 
-const Layout = () => {
+const Layout = ({ onLogout, userPermission = [] }) => {
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const menuItems = [
+    {
+      path: '/',
+      label: 'Dashboard',
+      icon: <LayoutDashboard size={18} />,
+      requiredPermission: 'Products:Read' 
+    },
+    {
+      path: '/products',
+      label: 'Produkty',
+      icon: <Package size={18} />,
+      requiredPermission: 'Products:Read'
+    },
+    {
+      path: '/reports',
+      label: 'Raporty i Zamówienia',
+      icon: <FileText size={18} />,
+      requiredPermission: 'Orders:Read'
+    }
+  ];
+
+  const allowedMenuItems = menuItems.filter(item => 
+    userPermission.includes(item.requiredPermission) || userPermission.includes('Access:All')
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -13,18 +38,12 @@ const Layout = () => {
       setIsMobile(mobile);
       if (!mobile) setMenuOpen(false);
     };
-
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      flexDirection: isMobile ? 'column' : 'row',
-      minHeight: '100vh' 
-    }}>
-      
+    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', minHeight: '100vh' }}>
       <aside style={{ 
         width: isMobile ? '100%' : '260px', 
         borderRight: isMobile ? 'none' : '1px solid var(--border)', 
@@ -44,48 +63,32 @@ const Layout = () => {
         <h2 style={{ fontSize: '20px', margin: 0 }}>WMS Panel</h2>
         
         {isMobile && (
-          <button 
-            onClick={() => setMenuOpen(!menuOpen)}
-            style={{ background: 'none', border: 'none', color: 'var(--text)', cursor: 'pointer' }}
-          >
+          <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', color: 'var(--text)', cursor: 'pointer' }}>
             {menuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         )}
 
-        <nav style={{ 
-          display: (!isMobile || menuOpen) ? 'flex' : 'none', 
-          flexDirection: isMobile ? 'column' : 'column', 
-          gap: '8px',
-          position: isMobile ? 'absolute' : 'static',
-          top: isMobile ? '100%' : 'auto',
-          left: 0,
-          width: isMobile ? '100%' : 'auto',
-          backgroundColor: 'var(--bg)',
-          padding: isMobile ? '20px' : '0',
-          borderBottom: isMobile ? '1px solid var(--border)' : 'none',
-          boxSizing: 'border-box'
-        }}>
-          <Link to="/" onClick={() => setMenuOpen(false)} style={menuStyle(location.pathname === '/')}>
-            <LayoutDashboard size={18} /> Dashboard
-          </Link>
-          <Link to="/products" onClick={() => setMenuOpen(false)} style={menuStyle(location.pathname === '/products')}>
-            <Package size={18} /> Produkty
-          </Link>
-          <Link to="/reports" onClick={() => setMenuOpen(false)} style={menuStyle(location.pathname === '/reports')}>
-            <FileText size={18} /> Raporty
-          </Link>
+        <nav style={{ display: (!isMobile || menuOpen) ? 'flex' : 'none', flexDirection: 'column', gap: '8px' }}>
+          {allowedMenuItems.map((item) => (
+            <Link 
+              key={item.path}
+              to={item.path} 
+              onClick={() => setMenuOpen(false)} 
+              style={menuStyle(location.pathname === item.path)}
+            >
+              {item.icon} {item.label}
+            </Link>
+          ))}
+
+          <button onClick={onLogout} style={{ ...menuStyle(false), color: '#e74c3c', cursor: 'pointer', background: 'none', border: 'none', marginTop: 'auto' }}>
+            Log Out (Wyloguj)
+          </button>
         </nav>
       </aside>
 
-      <main style={{ 
-        flex: 1, 
-        padding: isMobile ? '20px' : '32px', 
-        overflowY: 'auto',
-        boxSizing: 'border-box'
-      }}>
+      <main style={{ flex: 1, padding: isMobile ? '20px' : '32px', overflowY: 'auto', boxSizing: 'border-box' }}>
         <Outlet />
       </main>
-
     </div>
   );
 };
