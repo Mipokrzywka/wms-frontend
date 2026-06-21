@@ -5,16 +5,17 @@ import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
 import Reports from './pages/Reports';
 import Login from './pages/Login';
-
+import Users from './pages/Users';
+import Roles from './pages/Roles';
+import Orders from './pages/Orders';
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));
   
-  // Przechowujemy uprawnienie jako zwykły tekst (string), domyślnie pusty
   const [permission, setPermission] = useState(localStorage.getItem('userPermission') || '');
 
   const handleLogin = (userToken, userPermission) => {
     localStorage.setItem('token', userToken);
-    localStorage.setItem('userPermission', userPermission); // Zapisujemy np. "Access:All"
+    localStorage.setItem('userPermission', userPermission);
     setToken(userToken);
     setPermission(userPermission);
   };
@@ -25,17 +26,19 @@ function App() {
     setToken(null);
     setPermission('');
   };
-  console.log("AKTUALNE UPRAWNIENIE W APP:", permission);
+  // console.log("AKTUALNE UPRAWNIENIE W APP:", permission);
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={!token ? <Login onLogin={handleLogin} /> : <Navigate to="/" />} />
 
-        {/* Przekazujemy string uprawnienia do Layoutu */}
         <Route path="/" element={token ? <Layout onLogout={handleLogout} userPermission={permission} /> : <Navigate to="/login" />}>
           <Route index element={<Dashboard />} />
           <Route path="products" element={<Products />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="users" element={<Users />} />
+          <Route path="roles" element={<Roles />} />
+          <Route path="orders" element={<Orders />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />

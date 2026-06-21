@@ -1,1 +1,1 @@
-export default function Products() { return <h2>📦 Zarządzanie Produktami i Stanem</h2>; }
+export default function Products() { return <h2>Product management</h2>; }

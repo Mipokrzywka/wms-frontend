@@ -13,7 +13,7 @@ const Login = ({ onLogin }) => {
     setLoading(false);
 
     if (!username || !password) {
-      setError('Uzupełnij wszystkie pola.');
+      setError('Fill both fields.');
       return;
     }
 
@@ -30,24 +30,21 @@ const Login = ({ onLogin }) => {
       });
 
       if (!response.ok) {
-        throw new Error('Nieprawidłowy login lub hasło.');
+        throw new Error('Incorrect email or password.');
       }
 
-      const data = await response.json(); // backend zwraca np. { token: "ey..." }
+      const data = await response.json();
 
-// 🔓 Dekodujemy token, żeby wyciągnąć z niego obiekt { Permission: "Access:All", ... }
 const decoded = jwtDecode(data.token); 
 
-console.log("ZDEKODOWANY TOKEN Z BACKENDU:", decoded);
 
-// Przekazujemy token oraz wyciągnięte z niego uprawnienie bezpośrednio do App.jsx!
 onLogin(data.token, decoded.Permission);
 
     } catch (err) {
       if (username === 'admin' && password === 'admin') {
         onLogin('fake-jwt-token-for-tests', ['Access:All']);
       } else {
-        setError(err.message || 'Błąd połączenia z serwerem.');
+        setError(err.message || 'Failed to connect to server.');
       }
     } finally {
       setLoading(false);
@@ -58,24 +55,24 @@ onLogin(data.token, decoded.Permission);
     <div style={containerStyle}>
       <div style={cardStyle}>
         <h1 style={{ fontSize: '32px', margin: '0 0 10px 0' }}>WMS System</h1>
-        <p style={{ marginBottom: '24px' }}>Zaloguj się do panelu zarządzania</p>
+        <p style={{ marginBottom: '24px' }}>Log in page</p>
 
         {error && <div style={errorStyle}>⚠️ {error}</div>}
 
         <form onSubmit={handleSubmit} style={formStyle}>
           <div style={inputGroupStyle}>
-            <label style={labelStyle}>Identyfikator / Login</label>
+            <label style={labelStyle}>User email</label>
             <input 
               type="text" 
               value={username} 
               onChange={(e) => setUsername(e.target.value)} 
               style={inputStyle}
-              placeholder="np. admin"
+              placeholder="example@mail.com"
             />
           </div>
 
           <div style={inputGroupStyle}>
-            <label style={labelStyle}>Hasło dostępu</label>
+            <label style={labelStyle}>Password</label>
             <input 
               type="password" 
               value={password} 
@@ -86,7 +83,7 @@ onLogin(data.token, decoded.Permission);
           </div>
 
           <button type="submit" disabled={loading} style={buttonStyle}>
-            {loading ? 'Weryfikacja...' : 'Zaloguj się'}
+            {loading ? 'Verifying...' : 'Log in'}
           </button>
         </form>
       </div>

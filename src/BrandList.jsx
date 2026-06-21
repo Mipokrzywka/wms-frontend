@@ -8,7 +8,7 @@ const BrandList = () => {
     fetch('/api/brands')
       .then(response => {
         if (!response.ok) {
-          throw new Error('Błąd pobierania danych z API');
+          throw new Error('Failure in fetching data from API');
         }
         return response.json();
       })
@@ -21,9 +21,9 @@ const BrandList = () => {
       <h2>Test połączenia: React ↔ ASP.NET Core</h2>
       <hr />
       
-      {error && <p style={{ color: 'red' }}>Coś poszło nie tak: {error}</p>}
+      {error && <p style={{ color: 'red' }}>Something went wrong: {error}</p>}
       
-      {!error && brands.length === 0 && <p>Ładowanie marek z bazy danych...</p>}
+      {!error && brands.length === 0 && <p>Downloading brands from the database...</p>}
 
       <ul style={{ lineHeight: '2' }}>
         {brands.map(brand => (

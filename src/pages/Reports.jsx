@@ -1,1 +1,1 @@
-export default function Reports() { return <h2>📝 Generator Raportów i Plików CSV</h2>; }
+export default function Reports() { return <h2>Reports generator</h2>; }

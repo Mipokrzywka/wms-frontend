@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Package, FileText, LayoutDashboard, Menu, X } from 'lucide-react';
+import { Package, FileText, LayoutDashboard, Menu, X, ListOrdered, User, Shield, LogOut } from 'lucide-react';
 
 const Layout = ({ onLogout, userPermission = [] }) => {
   const location = useLocation();
@@ -11,21 +11,38 @@ const Layout = ({ onLogout, userPermission = [] }) => {
     {
       path: '/',
       label: 'Dashboard',
-      icon: <LayoutDashboard size={18} />,
-      requiredPermission: 'Products:Read' 
+      icon: <LayoutDashboard size={18} />
+    },
+    {
+      path: '/users',
+      label: 'Users',
+      icon: <User size={18}/>,
+      requiredPermission: 'Users:Read'
+    },
+    {
+      path: '/roles',
+      label: 'Roles',
+      icon: <Shield size={18}/>,
+      requiredPermission: 'Roles:Read'
     },
     {
       path: '/products',
-      label: 'Produkty',
+      label: 'Products',
       icon: <Package size={18} />,
       requiredPermission: 'Products:Read'
     },
     {
-      path: '/reports',
-      label: 'Raporty i Zamówienia',
-      icon: <FileText size={18} />,
+      path: '/orders',
+      label: 'Orders',
+      icon: <ListOrdered size={18}/>,
       requiredPermission: 'Orders:Read'
-    }
+    },
+    {
+      path: '/reports',
+      label: 'Reports',
+      icon: <FileText size={18} />,
+      requiredPermission: 'Reports:Read'
+    },  
   ];
 
   const allowedMenuItems = menuItems.filter(item => 
@@ -50,7 +67,7 @@ const Layout = ({ onLogout, userPermission = [] }) => {
         borderBottom: isMobile ? '1px solid var(--border)' : 'none',
         padding: '20px 24px',
         display: 'flex',
-        flexDirection: isMobile ? 'row' : 'column',
+        flexDirection: 'column',
         justifyContent: isMobile ? 'space-between' : 'flex-start',
         alignItems: isMobile ? 'center' : 'stretch',
         gap: '20px',
@@ -60,15 +77,17 @@ const Layout = ({ onLogout, userPermission = [] }) => {
         zIndex: 100,
         boxSizing: 'border-box'
       }}>
-        <h2 style={{ fontSize: '20px', margin: 0 }}>WMS Panel</h2>
-        
-        {isMobile && (
-          <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', color: 'var(--text)', cursor: 'pointer' }}>
-            {menuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
-        )}
+        <div style = {{display: 'flex', justifyContent: 'space-between', allignItems: 'center', width: '100%' }}> 
+          <h2>WMS Panel</h2>
+          
+          {isMobile && (
+            <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', color: 'var(--text)', cursor: 'pointer' }}>
+              {menuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          )}
+        </div>
 
-        <nav style={{ display: (!isMobile || menuOpen) ? 'flex' : 'none', flexDirection: 'column', gap: '8px' }}>
+        <nav style={{ display: (!isMobile || menuOpen) ? 'flex' : 'none', flexDirection: 'column', gap: '8px', allignItems: 'strech', width: '100%' }}>
           {allowedMenuItems.map((item) => (
             <Link 
               key={item.path}
@@ -80,8 +99,9 @@ const Layout = ({ onLogout, userPermission = [] }) => {
             </Link>
           ))}
 
-          <button onClick={onLogout} style={{ ...menuStyle(false), color: '#e74c3c', cursor: 'pointer', background: 'none', border: 'none', marginTop: 'auto' }}>
-            Log Out (Wyloguj)
+          <button onClick={onLogout} style={{ ...menuStyle(false), color: 'var(--red)', cursor: 'pointer', background: 'none', border: '1px solid', marginTop: 'auto' }}>
+            <LogOut size={18} />
+            Log Out
           </button>
         </nav>
       </aside>
@@ -96,7 +116,7 @@ const Layout = ({ onLogout, userPermission = [] }) => {
 const menuStyle = (isActive) => ({
   color: isActive ? 'var(--accent)' : 'var(--text)',
   backgroundColor: isActive ? 'var(--accent-bg)' : 'transparent',
-  border: isActive ? '1px solid var(--accent-border)' : '1px solid transparent',
+  border: isActive ? '1px solid var(--accent-border)' : '1px solid',
   textDecoration: 'none',
   padding: '12px 14px',
   borderRadius: '6px',
