@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // 🚀 Importujemy globalny Context
+import { useAuth } from '../context/AuthContext';
 import { Package, FileText, LayoutDashboard, Menu, X, ListOrdered, User, Shield, LogOut } from 'lucide-react';
 
 const Layout = () => {
-  const { permissions, logout } = useAuth(); // 🚀 Wyciągamy dane zamiast używać propsów
+  const { permissions, logout } = useAuth();
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -47,7 +47,6 @@ const Layout = () => {
     },  
   ];
 
-  // Korzystamy z globalnej tablicy `permissions` wyciągniętej z Contextu
   const allowedMenuItems = menuItems.filter(item => 
     permissions.includes(item.requiredPermission) || permissions.includes('Access:All')
   );
@@ -80,7 +79,6 @@ const Layout = () => {
         zIndex: 100,
         boxSizing: 'border-box'
       }}>
-        {/* Poprawiona literówka: alignItems zamiast allignItems */}
         <div style = {{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}> 
           <h2>WMS Panel</h2>
           
@@ -103,7 +101,6 @@ const Layout = () => {
             </Link>
           ))}
 
-          {/* Wywołujemy globalną funkcję logout z Contextu */}
           <button onClick={logout} style={{ ...menuStyle(false), color: 'var(--red)', cursor: 'pointer', background: 'none', border: '1px solid', marginTop: 'auto' }}>
             <LogOut size={18} />
             Log Out

@@ -9,7 +9,7 @@ import Login from './pages/Login';
 import Users from './pages/Users';
 import Roles from './pages/Roles';
 import Orders from './pages/Orders';
-import Layout from './components/ProtectedRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   const { token, permissions } = useAuth(); // 🚀 Wyciągamy dane z globalnego Contextu

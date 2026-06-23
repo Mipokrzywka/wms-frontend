@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Shield, UserPlus, Search, Loader, Trash2, CheckCircle2, XCircle } from 'lucide-react';
+import { UserPlus, Search, Loader, Trash2, Pencil } from 'lucide-react';
 
 const Users = () => {
-  const { token } = useAuth();
+  const { token, permissions } = useAuth();
+  const canManageUsers = Array.isArray(permissions) && (permissions.includes('Users:Manage') || permissions.includes('Access:All'));
+  
 
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingUserId, setEditingUserId] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,44 +44,104 @@ const Users = () => {
       setLoading(false);
     }
   };
-  const handleAddUser = async (e) => {
+  const handleSaveUser = async (e) => {
   e.preventDefault();
-  if (!formData.firstName || !formData.email || !formData.surname || !formData.roleIds) {
+
+  const cleanRoleIds = (Array.isArray(formData?.roleIds) ? formData.roleIds : [])
+  .map(id => Number(id))
+  .filter(id => !isNaN(id));
+  
+  const isFormVaild = isEditing 
+  ? (formData.firstName || formData.surname || cleanRoleIds.length > 0) 
+  : (formData.firstName || formData.surname || cleanRoleIds.length > 0 || formData.email)
+
+  if (!isFormVaild) {
     alert('Fill all fields.');
     return;
   }
-
   try {
     setFormSubmitLoading(true);
-    const cleanRoleIds = formData.roleIds.map(id => Number(id));
     
-    const response = await fetch('/api/users', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        firstName: formData.firstName,
-        surname: formData.surname,
-        email: formData.email,
-        roleIds: cleanRoleIds,
-      })
-    });
+    let response;
 
-    if (!response.ok) throw new Error('Failed to add the user.');
+    if (isEditing)
+    {
+      response = await fetch(`/api/users/${editingUserId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          surname: formData.surname,
+          roleIds: cleanRoleIds         
+        })
+      });
+    } else{    
+      response = await fetch('/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          surname: formData.surname,
+          email: formData.email,
+          roleIds: cleanRoleIds,
+        })
+      });
+    }
 
-    const newUserFromServer = await response.json();
-    
-    setUsers([...users, newUserFromServer]);
+    if (!response.ok){
+      const errMsg = await response.text();
+      throw new Error(errMsg || 'Failed to save the user.');
+    } 
+
+    if (isEditing){
+      const updatedRoleNames = roles.filter(r => cleanRoleIds.includes(r.roleId)).map(r => r.name);
+
+      setUsers(users.map(u => u.id === editingUserId 
+        ? { 
+            ...u, 
+            firstName: formData.firstName, 
+            surname: formData.surname, 
+            roles: updatedRoleNames 
+          } 
+        : u
+      ));
+    }
+    else{
+      const responseText = await response.text();
+      
+      try {
+        const newUserFromServer = JSON.parse(responseText);
+        setUsers([...users, newUserFromServer]);
+      } catch (e) {
+        const updatedRoleNames = roles.filter(r => cleanRoleIds.includes(r.id)).map(r => r.name);
+        const temporaryNewUser = {
+          id: Date.now(),
+          firstName: formData.firstName,
+          surname: formData.surname,
+          email: formData.email,
+          roles: updatedRoleNames
+        };
+        setUsers([...users, temporaryNewUser]);
+      }
+    }
+    setFormData({email: '', firstName: '', surname: '', roleIds: []})    
     setIsModalOpen(false);
+    setEditingUserId(null);
 
   } catch (err) {
-    console.log('API not responding');   
+    console.error(`Operation failure ${err}`);
+    alert(err.message);  
   } finally {
     setFormSubmitLoading(false);
   }
 };
+
   const fetchRoleNames = async () =>{
     try{
       setError(null);
@@ -101,7 +165,7 @@ const Users = () => {
   };
 
   const handleDeleteUser = async (userId) => {
-    if (!window.confirm('Do you want to delete this user?')) return;
+    if (!window.confirm('Do you want to delete the user?')) return;
 
     try {
       const response = await fetch(`/api/users/${userId}`, {
@@ -117,6 +181,25 @@ const Users = () => {
     } catch (err) {
       alert(err.message);
     }
+  };
+  const handleEditClick = (user) => {
+    setIsEditing(true);
+    setEditingUserId(user.id);
+    
+    const userRoleIds = (roles || [])
+    .filter(r => user.roles?.includes(r.name || r.Name))
+    .map(r => r.id ?? r.Id ?? r.roleId)
+    .filter(id => id !== undefined && id !== null)
+    .map(id => Number(id));
+
+    setFormData({
+      firstName: user.firstName || '',
+      surname: user.surname || '',
+      email: user.email || '',
+      roleIds: userRoleIds
+    });
+  
+    setIsModalOpen(true);
   };
 
   useEffect(() => {
@@ -140,12 +223,19 @@ const Users = () => {
         <div>
           <h1 style={{ fontSize: '26px', fontWeight: '600', margin: '0 0 6px 0', color: 'var(--text-h)' }}>User management panel</h1>
         </div>
-        <button 
-            onClick={() => setIsModalOpen(true)} 
+        {canManageUsers && (
+          <button 
+            onClick={() => {
+              setIsEditing(false);
+              setEditingUserId(null);
+              setFormData({ email: '', password: '', firstName: '', surname: '', roleIds: [] });
+              setIsModalOpen(true);
+            }} 
             style={{ backgroundColor: 'var(--accent-bg)', color: 'white', border: 'none', borderRadius: '6px', padding: '12px 20px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}
-        >
+          >
             <UserPlus size={18} /> Add user
-        </button>
+          </button>
+        )}        
       </div>
 
       <div style={{ backgroundColor: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '14px 20px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -196,8 +286,16 @@ const Users = () => {
                           {user.roles && user.roles.join(', ')}
                         </span>
                       </td>
-                      <td style={{ padding: '16px 20px' }}>
-                        <div style={{ display: 'flex', alignItems: 'right', justifyContent: 'space-between' }}>                          
+                      <td style={{ padding: '16px 20px' }}>                        
+                          {canManageUsers && (
+                            <div style={{ display: 'flex', alignItems: 'right', justifyContent: 'space-between' }}>
+                            <button 
+                            onClick={() => handleEditClick(user)}
+                            style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', padding: '4px' }}
+                            title="Edit user"
+                          >
+                            <Pencil size={16} />
+                          </button>                          
                           <button 
                             onClick={() => handleDeleteUser(user.id)}
                             style={{ background: 'none', border: 'none', color: 'var(--red)', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}
@@ -205,7 +303,9 @@ const Users = () => {
                           >
                             <Trash2 size={16} />
                           </button>
-                        </div>
+                            </div>
+                          )}
+                          
                       </td>
                     </tr>
                   );
@@ -219,9 +319,9 @@ const Users = () => {
   <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
     <div style={{ backgroundColor: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '12px', padding: '32px', width: '100%', maxWidth: '450px', boxShadow: 'var(--shadow)', boxSizing: 'border-box' }}>
       
-      <h2 style={{ margin: '0 0 20px 0', color: 'var(--text-h)', fontSize: '20px' }}>Add user</h2>
+      <h2 style={{ margin: '0 0 20px 0', color: 'var(--text-h)', fontSize: '20px' }}>{isEditing ? 'Edit user' : 'Add user'}</h2>
       
-      <form onSubmit={handleAddUser} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <form onSubmit={handleSaveUser} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <label style={{ fontSize: '13px', color: 'var(--text)', fontWeight: '500' }}>First name</label>
@@ -254,6 +354,7 @@ const Users = () => {
             placeholder="ex. j.smith@hives.com"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            disabled={isEditing}
             style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--code-bg)', color: 'var(--text-h)', outline: 'none' }}
           />
         </div>
@@ -313,14 +414,14 @@ const Users = () => {
             onClick={() => setIsModalOpen(false)}
             style={{ background: 'none', border: '1px solid var(--border)', color: 'var(--text)', padding: '10px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' }}
           >
-            Anuluj
+            Cancel
           </button>
           <button 
             type="submit" 
             disabled={formSubmitLoading}
             style={{ backgroundColor: 'var(--accent)', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '14px' }}
           >
-            {formSubmitLoading ? 'Zapisywanie...' : 'Zapisz pracownika'}
+            {formSubmitLoading ? 'Saving...' : 'Save user'}
           </button>
         </div>
 
