@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import { useAuth } from '../context/AuthContext';
 
-const Login = ({ onLogin }) => {
+const Login = () => {
+  const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -24,9 +26,9 @@ const Login = ({ onLogin }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            email: username,
-            password: password 
-            })
+          email: username,
+          password: password 
+        })
       });
 
       if (!response.ok) {
@@ -34,15 +36,14 @@ const Login = ({ onLogin }) => {
       }
 
       const data = await response.json();
+      const decoded = jwtDecode(data.token); 
 
-const decoded = jwtDecode(data.token); 
-
-
-onLogin(data.token, decoded.Permission);
+      login(data.token, decoded.Permission);
 
     } catch (err) {
       if (username === 'admin' && password === 'admin') {
-        onLogin('fake-jwt-token-for-tests', ['Access:All']);
+        // 🚀 Podmiana dla testów lokalnych
+        login('fake-jwt-token-for-tests', ['Access:All']);
       } else {
         setError(err.message || 'Failed to connect to server.');
       }
@@ -57,7 +58,7 @@ onLogin(data.token, decoded.Permission);
         <h1 style={{ fontSize: '32px', margin: '0 0 10px 0' }}>WMS System</h1>
         <p style={{ marginBottom: '24px' }}>Log in page</p>
 
-        {error && <div style={errorStyle}>⚠️ {error}</div>}
+        {error && <div style={errorStyle}>{error}</div>}
 
         <form onSubmit={handleSubmit} style={formStyle}>
           <div style={inputGroupStyle}>
@@ -155,13 +156,13 @@ const buttonStyle = {
 };
 
 const errorStyle = {
-  backgroundColor: 'rgba(231, 76, 60, 0.1)',
-  color: '#e74c3c',
+  backgroundColor: 'var(--error-bg)',
+  color: 'var(--error)',
   padding: '12px',
   borderRadius: '6px',
   fontSize: '14px',
   marginBottom: '15px',
-  border: '1px solid rgba(231, 76, 60, 0.2)'
+  border: '1px solid var(--error-bg)'
 };
 
 export default Login;

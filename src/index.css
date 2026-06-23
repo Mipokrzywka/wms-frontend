@@ -9,7 +9,9 @@
   --accent-border: #B093C2;
   --social-bg: #25262E;
   --red: #f2342c;
-
+  --error-bg:#3D0000;
+  --error: #e74c3c;
+  --thr-bg: #0022ff07;
   --basic: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 

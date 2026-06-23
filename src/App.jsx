@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
@@ -8,37 +9,37 @@ import Login from './pages/Login';
 import Users from './pages/Users';
 import Roles from './pages/Roles';
 import Orders from './pages/Orders';
+import Layout from './components/ProtectedRoute';
+
 function App() {
-  const [token, setToken] = useState(localStorage.getItem('token'));
-  
-  const [permission, setPermission] = useState(localStorage.getItem('userPermission') || '');
+  const { token, permissions } = useAuth(); // 🚀 Wyciągamy dane z globalnego Contextu
 
-  const handleLogin = (userToken, userPermission) => {
-    localStorage.setItem('token', userToken);
-    localStorage.setItem('userPermission', userPermission);
-    setToken(userToken);
-    setPermission(userPermission);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userPermission');
-    setToken(null);
-    setPermission('');
-  };
-  // console.log("AKTUALNE UPRAWNIENIE W APP:", permission);
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={!token ? <Login onLogin={handleLogin} /> : <Navigate to="/" />} />
+        {/* Jeśli jest token, przekieruj z /login na stronę główną */}
+        <Route path="/login" element={!token ? <Login /> : <Navigate to="/" />} />
 
-        <Route path="/" element={token ? <Layout onLogout={handleLogout} userPermission={permission} /> : <Navigate to="/login" />}>
+        {/* Główne trasy panelu - dostępne tylko dla zalogowanych */}
+        <Route path="/" element={token ? <Layout /> : <Navigate to="/login" />}>
           <Route index element={<Dashboard />} />
-          <Route path="products" element={<Products />} />
-          <Route path="reports" element={<Reports />} />
-          <Route path="users" element={<Users />} />
-          <Route path="roles" element={<Roles />} />
-          <Route path="orders" element={<Orders />} />
+          
+          {/* Zabezpieczone podstrony za pomocą ProtectedRoute */}
+          <Route path="users" element={
+            <ProtectedRoute requiredPermission="Users:Read"><Users /></ProtectedRoute>
+          } />
+          <Route path="roles" element={
+            <ProtectedRoute requiredPermission="Roles:Read"><Roles /></ProtectedRoute>
+          } />
+          <Route path="products" element={
+            <ProtectedRoute requiredPermission="Products:Read"><Products /></ProtectedRoute>
+          } />
+          <Route path="orders" element={
+            <ProtectedRoute requiredPermission="Orders:Read"><Orders /></ProtectedRoute>
+          } />
+          <Route path="reports" element={
+            <ProtectedRoute requiredPermission="Reports:Read"><Reports /></ProtectedRoute>
+          } />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />

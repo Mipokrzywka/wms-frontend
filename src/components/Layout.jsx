@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // 🚀 Importujemy globalny Context
 import { Package, FileText, LayoutDashboard, Menu, X, ListOrdered, User, Shield, LogOut } from 'lucide-react';
 
-const Layout = ({ onLogout, userPermission = [] }) => {
+const Layout = () => {
+  const { permissions, logout } = useAuth(); // 🚀 Wyciągamy dane zamiast używać propsów
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -45,8 +47,9 @@ const Layout = ({ onLogout, userPermission = [] }) => {
     },  
   ];
 
+  // Korzystamy z globalnej tablicy `permissions` wyciągniętej z Contextu
   const allowedMenuItems = menuItems.filter(item => 
-    userPermission.includes(item.requiredPermission) || userPermission.includes('Access:All')
+    permissions.includes(item.requiredPermission) || permissions.includes('Access:All')
   );
 
   useEffect(() => {
@@ -77,7 +80,8 @@ const Layout = ({ onLogout, userPermission = [] }) => {
         zIndex: 100,
         boxSizing: 'border-box'
       }}>
-        <div style = {{display: 'flex', justifyContent: 'space-between', allignItems: 'center', width: '100%' }}> 
+        {/* Poprawiona literówka: alignItems zamiast allignItems */}
+        <div style = {{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}> 
           <h2>WMS Panel</h2>
           
           {isMobile && (
@@ -87,7 +91,7 @@ const Layout = ({ onLogout, userPermission = [] }) => {
           )}
         </div>
 
-        <nav style={{ display: (!isMobile || menuOpen) ? 'flex' : 'none', flexDirection: 'column', gap: '8px', allignItems: 'strech', width: '100%' }}>
+        <nav style={{ display: (!isMobile || menuOpen) ? 'flex' : 'none', flexDirection: 'column', gap: '8px', alignItems: 'stretch', width: '100%' }}>
           {allowedMenuItems.map((item) => (
             <Link 
               key={item.path}
@@ -99,7 +103,8 @@ const Layout = ({ onLogout, userPermission = [] }) => {
             </Link>
           ))}
 
-          <button onClick={onLogout} style={{ ...menuStyle(false), color: 'var(--red)', cursor: 'pointer', background: 'none', border: '1px solid', marginTop: 'auto' }}>
+          {/* Wywołujemy globalną funkcję logout z Contextu */}
+          <button onClick={logout} style={{ ...menuStyle(false), color: 'var(--red)', cursor: 'pointer', background: 'none', border: '1px solid', marginTop: 'auto' }}>
             <LogOut size={18} />
             Log Out
           </button>
@@ -116,7 +121,7 @@ const Layout = ({ onLogout, userPermission = [] }) => {
 const menuStyle = (isActive) => ({
   color: isActive ? 'var(--accent)' : 'var(--text)',
   backgroundColor: isActive ? 'var(--accent-bg)' : 'transparent',
-  border: isActive ? '1px solid var(--accent-border)' : '1px solid',
+  border: isActive ? '1px solid var(--accent-border)' : '1px solid transparent', // Zmienione z '1px solid' na transparent dla czystszego wyglądu, gdy nieaktywne
   textDecoration: 'none',
   padding: '12px 14px',
   borderRadius: '6px',
