@@ -74,7 +74,9 @@ const Layout = () => {
         alignItems: isMobile ? 'center' : 'stretch',
         gap: '20px',
         backgroundColor: 'var(--bg)',
-        position: isMobile ? 'sticky' : 'relative',
+        position: 'sticky', 
+        top: 0,
+        height: isMobile ? 'auto' : '100vh',
         top: 0,
         zIndex: 100,
         boxSizing: 'border-box'
@@ -118,7 +120,7 @@ const Layout = () => {
 const menuStyle = (isActive) => ({
   color: isActive ? 'var(--accent)' : 'var(--text)',
   backgroundColor: isActive ? 'var(--accent-bg)' : 'transparent',
-  border: isActive ? '1px solid var(--accent-border)' : '1px solid transparent', // Zmienione z '1px solid' na transparent dla czystszego wyglądu, gdy nieaktywne
+  border: isActive ? '1px solid var(--accent-border)' : '1px solid transparent',
   textDecoration: 'none',
   padding: '12px 14px',
   borderRadius: '6px',

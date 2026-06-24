@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Package, ShoppingCart, AlertTriangle, TrendingUp, Activity, Loader } from 'lucide-react';
+import { Header } from '../components/common/Headers';
 
 const Dashboard = () => {
   const { token } = useAuth();
@@ -90,8 +91,8 @@ const Dashboard = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       
       <div>
-        <h1 style={{ fontSize: '28px', fontWeight: '600', margin: '0 0 6px 0', color: 'var(--text-h)' }}>Pulpit Główny</h1>
-        <p style={{ color: 'var(--text)', margin: 0, fontSize: '14px' }}>Witaj w systemie **Hives WMS**. Dane zsynchronizowane z serwerem.</p>
+        <Header text={'Main page'}/>
+        <p style={{ color: 'var(--text)', margin: 0, fontSize: '14px' }}>Welcome in the Hives WMS system.</p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>

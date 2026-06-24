@@ -42,7 +42,6 @@ const Login = () => {
 
     } catch (err) {
       if (username === 'admin' && password === 'admin') {
-        // 🚀 Podmiana dla testów lokalnych
         login('fake-jwt-token-for-tests', ['Access:All']);
       } else {
         setError(err.message || 'Failed to connect to server.');
@@ -55,8 +54,8 @@ const Login = () => {
   return (
     <div style={containerStyle}>
       <div style={cardStyle}>
-        <h1 style={{ fontSize: '32px', margin: '0 0 10px 0' }}>WMS System</h1>
-        <p style={{ marginBottom: '24px' }}>Log in page</p>
+        <h1>WMS System</h1>
+        <p>Log in page</p>
 
         {error && <div style={errorStyle}>{error}</div>}
 
@@ -83,7 +82,7 @@ const Login = () => {
             />
           </div>
 
-          <button type="submit" disabled={loading} style={buttonStyle}>
+          <button type="submit" disabled={loading} className='btn btn-primary'>
             {loading ? 'Verifying...' : 'Log in'}
           </button>
         </form>
@@ -141,19 +140,7 @@ const inputStyle = {
   fontFamily: 'var(--sans)'
 };
 
-const buttonStyle = {
-  padding: '14px',
-  fontSize: '16px',
-  fontWeight: '500',
-  backgroundColor: 'var(--accent)',
-  color: '#fff',
-  border: 'none',
-  borderRadius: '6px',
-  cursor: 'pointer',
-  transition: 'opacity 0.2s',
-  fontFamily: 'var(--sans)',
-  marginTop: '10px'
-};
+
 
 const errorStyle = {
   backgroundColor: 'var(--error-bg)',

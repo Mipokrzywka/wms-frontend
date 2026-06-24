@@ -1,14 +1,14 @@
 :root {
   --text: #ffffff;
-  --text-h: #f3f4f6;
   --bg: #16171d;
   --border: #2e303a;
+  --border-active: #656980;
   --code-bg: #1f2028;
   --accent: #c084fc;
   --accent-bg: #3E2F4C;
   --accent-border: #B093C2;
   --social-bg: #25262E;
-  --red: #f2342c;
+  --red: #FF0000;
   --error-bg:#3D0000;
   --error: #e74c3c;
   --thr-bg: #0022ff07;
@@ -30,12 +30,6 @@
     font-size: 16px;
   }
 }
-
-
-body {
-  margin: 0;
-}
-
 #root {
   width: 100%;
   max-width: 100%;
@@ -46,31 +40,29 @@ body {
   box-sizing: border-box;
 }
 
-h1,
-h2 {
-  font-weight: 500;
-  color: var(--text-h);
-}
-
 h1 {
-  font-size: 56px;
+  font-size: 26px;
   letter-spacing: -1.68px;
   margin: 32px 0;
   @media (max-width: 1024px) {
-    font-size: 36px;
+    font-size: 20px;
     margin: 20px 0;
   }
 }
 h2 {
-  font-size: 24px;
+  font-size: 20px;
   line-height: 118%;
   letter-spacing: -0.24px;
   margin: 0 0 8px;
   @media (max-width: 1024px) {
-    font-size: 20px;
+    font-size: 18px;
   }
 }
-p {
-  margin: 0;
+input{
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
 }
+
 

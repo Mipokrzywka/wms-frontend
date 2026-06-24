@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { UserPlus, Search, Loader, Trash2, Pencil } from 'lucide-react';
+import { Header } from '../components/common/Headers';
 
 const Users = () => {
   const { token, permissions } = useAuth();
@@ -142,7 +143,7 @@ const Users = () => {
   }
 };
 
-  const fetchRoleNames = async () =>{
+  const fetchRoles = async () =>{
     try{
       setError(null);
 
@@ -205,7 +206,7 @@ const Users = () => {
   useEffect(() => {
     if (token) {
       fetchUsers();
-      fetchRoleNames();
+      fetchRoles();
     }
   }, [token]);
 
@@ -220,9 +221,7 @@ const Users = () => {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <div>
-          <h1 style={{ fontSize: '26px', fontWeight: '600', margin: '0 0 6px 0', color: 'var(--text-h)' }}>User management panel</h1>
-        </div>
+        <h2>User management</h2>
         {canManageUsers && (
           <button 
             onClick={() => {
@@ -231,7 +230,7 @@ const Users = () => {
               setFormData({ email: '', password: '', firstName: '', surname: '', roleIds: [] });
               setIsModalOpen(true);
             }} 
-            style={{ backgroundColor: 'var(--accent-bg)', color: 'white', border: 'none', borderRadius: '6px', padding: '12px 20px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}
+            className='btn btn-primary'
           >
             <UserPlus size={18} /> Add user
           </button>
@@ -239,14 +238,13 @@ const Users = () => {
       </div>
 
       <div style={{ backgroundColor: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '14px 20px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <Search size={18} color="var(--text)" />
+        <Search size={18} />
         <input 
           type="text" 
           placeholder="Search by name, surname, email or role" 
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           disabled={loading || error}
-          style={{ flex: 1, background: 'none', border: 'none', color: 'var(--text-h)', fontSize: '14px', outline: 'none' }}
         />
       </div>
 
@@ -259,7 +257,7 @@ const Users = () => {
       ) : error ? (
         <div style={{ backgroundColor: 'var(--error-bg)', border: '1px solid var(--error)', color: 'var(--error)', padding: '20px', borderRadius: '8px', textAlign: 'center' }}>
           <p style={{ margin: '0 0 12px 0', fontWeight: '600' }}>{error}</p>
-          <button onClick={fetchUsers} style={{ backgroundColor: 'var(--accent)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer' }}>Spróbuj ponownie</button>
+          <button onClick={fetchUsers} style={{ backgroundColor: 'var(--accent)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer' }}>Try again</button>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '24px' }}>
@@ -276,7 +274,8 @@ const Users = () => {
               <tbody>
                 {filteredUsers.map((user) => {
                   return (
-                    <tr key={user.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                    <tr key={user.id}
+                     style={{ borderBottom: '1px solid var(--border)' }}>
                       <td style={{ padding: '16px 20px' }}>
                         <div style={{ fontWeight: '600', marginBottom: '2px', color: 'var(--text-h)' }}>{user.firstName} {user.surname}</div>
                         <div style={{ fontSize: '12px', color: 'var(--text)' }}>{user.email}</div>
@@ -291,14 +290,14 @@ const Users = () => {
                             <div style={{ display: 'flex', alignItems: 'right', justifyContent: 'space-between' }}>
                             <button 
                             onClick={() => handleEditClick(user)}
-                            style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', padding: '4px' }}
+                            className='btn-icon btn-icon-primary'
                             title="Edit user"
                           >
                             <Pencil size={16} />
                           </button>                          
                           <button 
                             onClick={() => handleDeleteUser(user.id)}
-                            style={{ background: 'none', border: 'none', color: 'var(--red)', cursor: 'pointer', padding: '4px', borderRadius: '4px' }}
+                            className='btn-icon btn-icon-delete'
                             title="Delete user"
                           >
                             <Trash2 size={16} />
@@ -355,7 +354,7 @@ const Users = () => {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             disabled={isEditing}
-            style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--code-bg)', color: 'var(--text-h)', outline: 'none' }}
+            style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--code-bg)'}}
           />
         </div>
 
@@ -398,7 +397,7 @@ const Users = () => {
                 });
               }
             }}
-            style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: 'var(--accent)' }}
+            style={{accentColor: 'var(--accent)', flex:0}}
           />
           {role.name}
         </label>
@@ -412,14 +411,14 @@ const Users = () => {
           <button 
             type="button" 
             onClick={() => setIsModalOpen(false)}
-            style={{ background: 'none', border: '1px solid var(--border)', color: 'var(--text)', padding: '10px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' }}
+            className='btn btn-cancel'
           >
             Cancel
           </button>
           <button 
             type="submit" 
             disabled={formSubmitLoading}
-            style={{ backgroundColor: 'var(--accent)', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '14px' }}
+            className='btn btn-primary'
           >
             {formSubmitLoading ? 'Saving...' : 'Save user'}
           </button>
