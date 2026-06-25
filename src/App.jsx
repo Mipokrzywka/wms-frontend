@@ -10,6 +10,7 @@ import Users from './pages/Users';
 import Roles from './pages/Roles';
 import Orders from './pages/Orders';
 import ProtectedRoute from './components/ProtectedRoute';
+import ProductCategories from './pages/ProductCategories';
 
 function App() {
   const { token, permissions } = useAuth();
@@ -36,6 +37,9 @@ function App() {
           } />
           <Route path="reports" element={
             <ProtectedRoute requiredPermission="Reports:Read"><Reports /></ProtectedRoute>
+          } />
+          <Route path="product-categories" element={
+            <ProtectedRoute requiredPermission="ProductCategories:Read"><ProductCategories /></ProtectedRoute>
           } />
         </Route>
 

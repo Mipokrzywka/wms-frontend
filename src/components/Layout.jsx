@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Package, FileText, LayoutDashboard, Menu, X, ListOrdered, User, Shield, LogOut } from 'lucide-react';
+import { Package, FileText, LayoutDashboard, Menu, X, ListOrdered, User, Shield, LogOut, Tags } from 'lucide-react';
 
 const Layout = () => {
   const { permissions, logout } = useAuth();
@@ -39,6 +39,12 @@ const Layout = () => {
       requiredPermission: 'Products:Read'
     },
     {
+      path: '/product-categories',
+      label: 'ProductCategories',
+      icon: <Tags size={18} />,
+      requiredPermission: 'ProductCategories:Read'
+    },   
+    {
       path: '/orders',
       label: 'Orders',
       icon: <ListOrdered size={18}/>,
@@ -49,7 +55,7 @@ const Layout = () => {
       label: 'Reports',
       icon: <FileText size={18} />,
       requiredPermission: 'Reports:Read'
-    },  
+    }    
   ];
 
   const allowedMenuItems = menuItems.filter(item => 

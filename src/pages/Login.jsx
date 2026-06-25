@@ -27,7 +27,7 @@ const Login = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: username,
-          password: password 
+          password: password
         })
       });
 
@@ -36,7 +36,7 @@ const Login = () => {
       }
 
       const data = await response.json();
-      const decoded = jwtDecode(data.token); 
+      const decoded = jwtDecode(data.token);
 
       login(data.token, decoded.Permission);
 
@@ -62,11 +62,11 @@ const Login = () => {
         <form onSubmit={handleSubmit} style={formStyle}>
           <div style={inputGroupStyle}>
             <label style={labelStyle}>User email</label>
-            <input 
-              type="emails" 
+            <input
+              type="emails"
               value={username}
-              required 
-              onChange={(e) => setUsername(e.target.value)} 
+              required
+              onChange={(e) => setUsername(e.target.value)}
               style={inputStyle}
               placeholder="example@mail.com"
             />
@@ -74,11 +74,11 @@ const Login = () => {
 
           <div style={inputGroupStyle}>
             <label style={labelStyle}>Password</label>
-            <input 
-              type="password" 
-              value={password} 
+            <input
+              type="password"
+              value={password}
               required
-              onChange={(e) => setPassword(e.target.value)} 
+              onChange={(e) => setPassword(e.target.value)}
               style={inputStyle}
               placeholder="••••••••"
             />
