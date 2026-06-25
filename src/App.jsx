@@ -12,19 +12,16 @@ import Orders from './pages/Orders';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
-  const { token, permissions } = useAuth(); // 🚀 Wyciągamy dane z globalnego Contextu
+  const { token, permissions } = useAuth();
 
   return (
     <BrowserRouter>
       <Routes>
-        {/* Jeśli jest token, przekieruj z /login na stronę główną */}
         <Route path="/login" element={!token ? <Login /> : <Navigate to="/" />} />
 
-        {/* Główne trasy panelu - dostępne tylko dla zalogowanych */}
         <Route path="/" element={token ? <Layout /> : <Navigate to="/login" />}>
           <Route index element={<Dashboard />} />
           
-          {/* Zabezpieczone podstrony za pomocą ProtectedRoute */}
           <Route path="users" element={
             <ProtectedRoute requiredPermission="Users:Read"><Users /></ProtectedRoute>
           } />

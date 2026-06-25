@@ -8,6 +8,11 @@ const Layout = () => {
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
   const [menuOpen, setMenuOpen] = useState(false);
+  const getMenuClassName = (path) => {
+    const isActive = location.pathname === path;
+    return `menu-item ${isActive ? 'active' : ''}`;
+  };
+  
 
   const menuItems = [
     {
@@ -62,30 +67,13 @@ const Layout = () => {
   }, []);
 
   return (
-    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', minHeight: '100vh' }}>
-      <aside style={{ 
-        width: isMobile ? '100%' : '260px', 
-        borderRight: isMobile ? 'none' : '1px solid var(--border)', 
-        borderBottom: isMobile ? '1px solid var(--border)' : 'none',
-        padding: '20px 24px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: isMobile ? 'space-between' : 'flex-start',
-        alignItems: isMobile ? 'center' : 'stretch',
-        gap: '20px',
-        backgroundColor: 'var(--bg)',
-        position: 'sticky', 
-        top: 0,
-        height: isMobile ? 'auto' : '100vh',
-        top: 0,
-        zIndex: 100,
-        boxSizing: 'border-box'
-      }}>
-        <div style = {{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}> 
-          <h2>WMS Panel</h2>
+    <div className= 'app-layout'>
+      <aside className='sidebar'>
+        <div className='flex-between' style = {{width: '100%'}}> 
+          <h2>Hives WMS</h2>
           
           {isMobile && (
-            <button onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'none', border: 'none', color: 'var(--text)', cursor: 'pointer' }}>
+            <button onClick={() => setMenuOpen(!menuOpen)} className='btn-icon'>
               {menuOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
           )}
@@ -97,39 +85,25 @@ const Layout = () => {
               key={item.path}
               to={item.path} 
               onClick={() => setMenuOpen(false)} 
-              style={menuStyle(location.pathname === item.path)}
+              className={getMenuClassName(item.path)}
             >
               {item.icon} {item.label}
             </Link>
           ))}
 
-          <button onClick={logout} style={{ ...menuStyle(false), color: 'var(--red)', cursor: 'pointer', background: 'none', border: '1px solid', marginTop: 'auto' }}>
+          <button onClick={logout} className="menu-item logout-btn">
             <LogOut size={18} />
             Log Out
           </button>
         </nav>
       </aside>
 
-      <main style={{ flex: 1, padding: isMobile ? '20px' : '32px', overflowY: 'auto', boxSizing: 'border-box' }}>
+      <main className='main-content'>
         <Outlet />
       </main>
     </div>
   );
 };
 
-const menuStyle = (isActive) => ({
-  color: isActive ? 'var(--accent)' : 'var(--text)',
-  backgroundColor: isActive ? 'var(--accent-bg)' : 'transparent',
-  border: isActive ? '1px solid var(--accent-border)' : '1px solid transparent',
-  textDecoration: 'none',
-  padding: '12px 14px',
-  borderRadius: '6px',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '12px',
-  fontSize: '15px',
-  fontWeight: isActive ? '500' : '400',
-  transition: 'all 0.2s ease'
-});
 
 export default Layout;

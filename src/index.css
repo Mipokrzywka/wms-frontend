@@ -25,6 +25,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
 
   @media (max-width: 1024px) {
     font-size: 16px;
@@ -58,11 +59,42 @@ h2 {
     font-size: 18px;
   }
 }
+form{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+}
 input{
   flex: 1;
   background: none;
   border: none;
   outline: none;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+thead tr {
+  border-bottom: 1px solid var(--border);
+  background-color: var(--thr-bg);
+}
+
+th {
+  padding: 16px 20px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  padding: 16px 20px;
 }
 
 

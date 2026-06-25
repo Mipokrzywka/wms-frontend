@@ -52,19 +52,20 @@ const Login = () => {
   };
 
   return (
-    <div style={containerStyle}>
-      <div style={cardStyle}>
+    <div className='center-container'>
+      <div className='card'>
         <h1>WMS System</h1>
         <p>Log in page</p>
 
-        {error && <div style={errorStyle}>{error}</div>}
+        {error && <div className='error'>{error}</div>}
 
         <form onSubmit={handleSubmit} style={formStyle}>
           <div style={inputGroupStyle}>
             <label style={labelStyle}>User email</label>
             <input 
-              type="text" 
-              value={username} 
+              type="emails" 
+              value={username}
+              required 
               onChange={(e) => setUsername(e.target.value)} 
               style={inputStyle}
               placeholder="example@mail.com"
@@ -76,6 +77,7 @@ const Login = () => {
             <input 
               type="password" 
               value={password} 
+              required
               onChange={(e) => setPassword(e.target.value)} 
               style={inputStyle}
               placeholder="••••••••"

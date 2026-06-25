@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { UserPlus, Search, Loader, Trash2, Pencil } from 'lucide-react';
+import { UserPlus, Search, Trash2, Pencil } from 'lucide-react';
 import { Header } from '../components/common/Headers';
 
 const Users = () => {
@@ -220,7 +220,7 @@ const Users = () => {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+      <div className='flex-between' style={{marginBottom:'30px'}}>
         <h2>User management</h2>
         {canManageUsers && (
           <button 
@@ -237,7 +237,7 @@ const Users = () => {
         )}        
       </div>
 
-      <div style={{ backgroundColor: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '8px', padding: '14px 20px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div className='input-wrapper' style={{marginBottom:'10px'}}>
         <Search size={18} />
         <input 
           type="text" 
@@ -247,47 +247,33 @@ const Users = () => {
           disabled={loading || error}
         />
       </div>
-
-      {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px', gap: '12px', color: 'var(--accent)' }}>
-          <Loader size={32} style={{ animation: 'spin 1s linear infinite' }} />
-          <span style={{ color: 'var(--text)' }}>Pobieranie listy użytkowników...</span>
-          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-        </div>
-      ) : error ? (
-        <div style={{ backgroundColor: 'var(--error-bg)', border: '1px solid var(--error)', color: 'var(--error)', padding: '20px', borderRadius: '8px', textAlign: 'center' }}>
-          <p style={{ margin: '0 0 12px 0', fontWeight: '600' }}>{error}</p>
-          <button onClick={fetchUsers} style={{ backgroundColor: 'var(--accent)', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer' }}>Try again</button>
-        </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '24px' }}>
+        <div>
           
-          <div style={{ backgroundColor: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '12px', overflow: 'hidden', height: 'fit-content' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
+          <div className='table-wrapper'>
+            <table>
               <thead>
-                <tr style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--thr-bg)' }}>
-                  <th style={{ padding: '16px 20px', color: 'var(--text)', fontWeight: '500' }}>User</th>
-                  <th style={{ padding: '16px 20px', color: 'var(--text)', fontWeight: '500' }}>Roles</th>
+                <tr>
+                  <th>User</th>
+                  <th>Roles</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody>
                 {filteredUsers.map((user) => {
                   return (
-                    <tr key={user.id}
-                     style={{ borderBottom: '1px solid var(--border)' }}>
-                      <td style={{ padding: '16px 20px' }}>
-                        <div style={{ fontWeight: '600', marginBottom: '2px', color: 'var(--text-h)' }}>{user.firstName} {user.surname}</div>
-                        <div style={{ fontSize: '12px', color: 'var(--text)' }}>{user.email}</div>
+                    <tr key={user.id}>
+                      <td>
+                        <div>{user.firstName} {user.surname}</div>
+                        <div>{user.email}</div>
                       </td>
-                      <td style={{ padding: '16px 20px' }}>
-                        <span style={{fontSize: '12px', fontWeight: '500' }}>
+                      <td>
+                        <span>
                           {user.roles && user.roles.join(', ')}
                         </span>
                       </td>
-                      <td style={{ padding: '16px 20px' }}>                        
+                      <td>                        
                           {canManageUsers && (
-                            <div style={{ display: 'flex', alignItems: 'right', justifyContent: 'space-between' }}>
+                            <div className='flex-end-gap'>
                             <button 
                             onClick={() => handleEditClick(user)}
                             className='btn-icon btn-icon-primary'
@@ -315,38 +301,41 @@ const Users = () => {
 
           
 {isModalOpen && (
-  <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
-    <div style={{ backgroundColor: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '12px', padding: '32px', width: '100%', maxWidth: '450px', boxShadow: 'var(--shadow)', boxSizing: 'border-box' }}>
+  <div className='modal-overlay'>
+    <div className='card' style={{width: '450px', padding:'32px'}}>
       
-      <h2 style={{ margin: '0 0 20px 0', color: 'var(--text-h)', fontSize: '20px' }}>{isEditing ? 'Edit user' : 'Add user'}</h2>
+      <h2 style={{ margin: '0 0 24px 0'}}>{isEditing ? 'Edit user' : 'Add user'}</h2>
       
-      <form onSubmit={handleSaveUser} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <form onSubmit={handleSaveUser}>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ fontSize: '13px', color: 'var(--text)', fontWeight: '500' }}>First name</label>
+        <div className="form-group">
+          <label className="form-label">First name</label>
+          <div className='input-wrapper'>
           <input 
             type="text" 
             required
             placeholder="ex. John"
             value={formData.firstName}
-            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-            style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--code-bg)', color: 'var(--text-h)', outline: 'none' }}
+            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}            
           />
+          </div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ fontSize: '13px', color: 'var(--text)', fontWeight: '500' }}>Surname</label>
+        <div className="form-group">
+          <label className="form-label">Surname</label>
+          <div className='input-wrapper'>
           <input 
             type="text" 
             required
             placeholder="ex. Smith"
             value={formData.surname}
             onChange={(e) => setFormData({ ...formData, surname: e.target.value })}
-            style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--code-bg)', color: 'var(--text-h)', outline: 'none' }}
           />
+          </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <label style={{ fontSize: '13px', color: 'var(--text)', fontWeight: '500' }}>Adres E-mail</label>
+        <div className="form-group">
+          <label className="form-label">Adres E-mail</label>
+          <div className='input-wrapper'>
           <input 
             type="email" 
             required
@@ -354,32 +343,22 @@ const Users = () => {
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             disabled={isEditing}
-            style={{ padding: '10px', borderRadius: '6px', border: '1px solid var(--border)', backgroundColor: 'var(--code-bg)'}}
           />
+          </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-  <label style={{ fontSize: '13px', color: 'var(--text)', fontWeight: '500' }}>
+        <div className="form-group">
+  <label className="form-label">
     Roles
   </label>
   
-  <div style={{ 
-    display: 'flex', 
-    flexDirection: 'column', 
-    gap: '10px', 
-    maxHeight: '150px', 
-    overflowY: 'auto', 
-    backgroundColor: 'var(--code-bg)', 
-    border: '1px solid var(--border)', 
-    borderRadius: '6px', 
-    padding: '12px' 
-  }}>
+  <div className='checkbox-wrapper'>
     {roles && roles.map((role) => {
       const actualRoleId = role.id ?? role.Id ?? role.roleId ?? index;
       const isChecked = (formData?.roleIds || []).includes(actualRoleId);
 
       return (
-        <label key={role.roleId} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px', color: 'var(--text-h)' }}>
+        <label key={role.roleId} className='checkbox-label'>
           <input 
             type="checkbox"
             checked={isChecked}
@@ -397,7 +376,7 @@ const Users = () => {
                 });
               }
             }}
-            style={{accentColor: 'var(--accent)', flex:0}}
+            className='checkbox-item'
           />
           {role.name}
         </label>
@@ -407,7 +386,7 @@ const Users = () => {
 </div>
         
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
+        <div className='flex-end-gap'>
           <button 
             type="button" 
             onClick={() => setIsModalOpen(false)}
@@ -429,7 +408,6 @@ const Users = () => {
   </div>
 )}
         </div>
-      )}
     </div>
   );
 };
