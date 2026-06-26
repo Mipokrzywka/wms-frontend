@@ -21,12 +21,7 @@ const Roles = () => {
     permissionIds: []
   });
 
-  useEffect(() => {
-    if (token) {
-      fetchRoles();
-      fetchPermissions();
-    }
-  }, [token]);
+
 
   const fetchRoles = async () => {
     try {
@@ -64,7 +59,12 @@ const Roles = () => {
     }
   };
 
-
+    useEffect(() => {
+    if (token) {
+      fetchRoles();
+      fetchPermissions();
+    }
+  }, [token]);
 
   const handleSaveRole = async (e) => {
     e.preventDefault();
@@ -122,7 +122,7 @@ const Roles = () => {
         const errorText = await response.text();
         throw new Error(`Role deletion failure, response: ${errorText}`);
       }
-      setRoles(roles.filter(role => role.roleId !== roleId));
+      await fetchRoles();
     } catch (err) {
       alert(err.message);
     }

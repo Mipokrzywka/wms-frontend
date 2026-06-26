@@ -18,12 +18,6 @@ const ProductCategories = () => {
         name: ''
     });
 
-    useEffect(() => {
-        if (token) {
-            fetchCategories();
-        }
-    }, [token]);
-
     const fetchCategories = async () => {
         try {
             const response = await fetch('/api/ProductCategories', {
@@ -44,6 +38,12 @@ const ProductCategories = () => {
         }
     };
 
+    useEffect(() => {
+        if (token) {
+            fetchCategories();
+        }
+    }, [token]);
+    
     const handleSaveCategory = async (e) => {
         e.preventDefault();
 

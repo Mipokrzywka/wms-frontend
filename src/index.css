@@ -71,6 +71,15 @@ input{
   border: none;
   outline: none;
 }
+select{
+  flex: 1;
+  background: none;
+  border: none;
+}
+option{
+  background-color: var(--bg);
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

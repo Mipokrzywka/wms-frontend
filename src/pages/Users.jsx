@@ -161,7 +161,7 @@ const Users = () => {
 
       if (!response.ok)  throw new Error(`User deletion failure. status: ${response.status}`);
 
-      setUsers(users.filter(user => user.id !== userId));
+      await fetchUsers();
     } catch (err) {
       alert(err.message);
     }
